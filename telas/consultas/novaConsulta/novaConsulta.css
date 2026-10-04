@@ -1,0 +1,254 @@
+/* ===== Agendar consulta (CSS completo, independente) ===== */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  color: #1f2d3d;
+  background: #fff;
+}
+
+a { text-decoration: none; color: inherit; }
+
+.ic {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex: none;
+}
+
+.layout { display: flex; min-height: 100vh; }
+
+/* ----- Sidebar ----- */
+.sidebar {
+  width: 259px;
+  flex: none;
+  background: #f1f5f9;
+}
+
+.logo {
+  height: 67px;
+  background: #26374a;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-left: 17px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.logo .ic { width: 20px; height: 20px; stroke-width: 3; }
+
+.nav { list-style: none; padding: 21px 7px; }
+
+.nav a {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  height: 48px;
+  padding-left: 14px;
+  margin-bottom: 9.5px;
+  border-radius: 10px;
+  color: #6b7a8c;
+  font-size: 15px;
+}
+
+.nav a.ativo {
+  background: #e8ecf4;
+  color: #1f2d3d;
+  font-weight: bold;
+}
+
+/* ----- Topbar ----- */
+.principal { flex: 1; min-width: 0; }
+
+.topbar {
+  height: 67px;
+  border-bottom: 1px solid #cdd6e0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px 0 41px;
+}
+
+.busca {
+  width: 389px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 10px;
+  background: #f8fafc;
+  border: 1px solid #cdd6e0;
+  border-radius: 8px;
+  color: #6b7a8c;
+}
+
+.busca .ic { width: 20px; height: 20px; }
+
+.busca input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 15px;
+  color: #1f2d3d;
+}
+
+.busca input::placeholder { color: #6b7a8c; }
+
+.usuario {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: #6b7a8c;
+}
+
+.usuario__avatar {
+  width: 30px;
+  height: 30px;
+  border: 2px solid #6b7a8c;
+  border-radius: 50%;
+}
+
+/* ----- Conteúdo ----- */
+.conteudo { padding: 26px 40px 40px 41px; }
+
+.breadcrumb { font-size: 12px; color: #6b7a8c; }
+
+h1 {
+  margin-top: 15px;
+  font-size: 28px;
+  line-height: 32px;
+  font-weight: bold;
+}
+
+/* ----- Formulário ----- */
+.formulario {
+  width: 620px;
+  max-width: 100%;
+  margin: 27px 0 0 27px;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 24px;
+}
+
+
+.campo label {
+  height: 14px;
+  margin-bottom: 8px;
+  font-size: 12px;
+  line-height: 14px;
+  font-weight: bold;
+}
+
+.campo input,
+.campo textarea {
+  width: 100%;
+  padding: 0 13px;
+  border: 1px solid #cdd6e0;
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: inherit;
+  color: #1f2d3d;
+  background: #fff;
+}
+
+.campo input { height: 36px; }
+
+.campo textarea {
+  height: 70px;
+  padding: 10px 13px;
+  resize: vertical;
+}
+
+.campo input::placeholder,
+.campo textarea::placeholder { color: #6b7a8c; }
+
+.campo input:focus,
+.campo textarea:focus {
+  outline: none;
+  border-color: #4a6078;
+  box-shadow: 0 0 0 3px rgba(74, 96, 120, 0.15);
+}
+
+/* Data e horário lado a lado */
+.linha {
+  display: flex;
+  gap: 46px;
+}
+
+.campo--data { flex: 0 0 274px; }
+.campo--horario { flex: 1; }
+
+/* ----- Botões ----- */
+.botoes {
+  margin-top: 15px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 13px;
+}
+
+.btn {
+  width: 101px;
+  height: 39px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: bold;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.btn--cancelar {
+  background: #fff;
+  border: 1px solid #cdd6e0;
+  color: #6b7a8c;
+}
+
+.btn--salvar {
+  background: #4a6078;
+  border: 1px solid #4a6078;
+  color: #fff;
+}
+
+.btn--salvar:hover { background: #3d5166; }
+
+/* ----- Select ----- */
+.campo select {
+  width: 100%;
+  height: 36px;
+  padding: 0 13px;
+  border: 1px solid #cdd6e0;
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: inherit;
+  color: #1f2d3d;
+  background-color: #fff;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236b7a8c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+}
+
+.campo select:invalid { color: #6b7a8c; }
+.campo select option { color: #1f2d3d; }
+
+.campo select:focus {
+  outline: none;
+  border-color: #4a6078;
+  box-shadow: 0 0 0 3px rgba(74, 96, 120, 0.15);
+}

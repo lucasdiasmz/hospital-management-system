@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Internações - Hospital Vida +</title>
+  <link rel="stylesheet" href="internacao.css">
+</head>
+<body>
+
+  <!-- Ícones (sprite SVG) -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 4v16M4 12h16"/></symbol>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></symbol>
+    <symbol id="i-brief" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5h6v2"/></symbol>
+    <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+    <symbol id="i-bed" viewBox="0 0 24 24"><path d="M3 18V6M3 14h18v4M3 14v-3h8a3 3 0 0 1 3 3"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></symbol>
+    <symbol id="i-filter" viewBox="0 0 24 24"><path d="M3 5h18l-7 8v6l-4-2v-4z"/></symbol>
+  </svg>
+
+  <div class="layout">
+
+    <aside class="sidebar">
+      <div class="logo"><svg class="ic"><use href="#i-plus"/></svg> Hospital Vida +</div>
+      <ul class="nav">
+        <li><a href="../inicio/dashboard.html"><svg class="ic"><use href="#i-home"/></svg> Início</a></li>
+        <li><a href="../pacientes/pacientes.html"><svg class="ic"><use href="#i-user"/></svg> Pacientes</a></li>
+        <li><a href="../profissionais/profissional.html"><svg class="ic"><use href="#i-brief"/></svg> Profissionais</a></li>
+        <li><a href="../consultas/consultas.html"><svg class="ic"><use href="#i-cal"/></svg> Consultas</a></li>
+        <li><a href="../internacoes/internacao.html" class="ativo"><svg class="ic"><use href="#i-bed"/></svg> Internações</a></li>
+        <li><a href="../quartos/quarto.html"><svg class="ic"><use href="#i-bed"/></svg> Quartos</a></li>
+        <li><a href="#"><svg class="ic"><use href="#i-clock"/></svg> Histórico</a></li>
+      </ul>
+    </aside>
+
+    <div class="principal">
+      <header class="topbar">
+        <div class="busca">
+          <svg class="ic"><use href="#i-search"/></svg>
+          <input type="text" placeholder="Buscar...">
+        </div>
+        <div class="usuario">
+          <span>Usuário</span>
+          <div class="usuario__avatar"></div>
+        </div>
+      </header>
+
+      <main class="conteudo">
+        <div class="breadcrumb">Internações / Lista</div>
+
+        <div class="cabecalho">
+          <h1>Internações</h1>
+          <a href="novaInternacao/novaInternacao.html" class="btn btn--primario">
+            <svg class="ic"><use href="#i-plus"/></svg> Nova Internação
+          </a>
+        </div>
+
+        <div class="filtros">
+          <div class="campo-busca">
+            <svg class="ic"><use href="#i-search"/></svg>
+            <input type="text" placeholder="Buscar por paciente, quarto...">
+          </div>
+          <button class="btn btn--claro" type="button">
+            <svg class="ic"><use href="#i-filter"/></svg> Filtros
+          </button>
+        </div>
+
+        <table class="tabela">
+          <thead>
+            <tr>
+              <th>Paciente</th>
+              <th>Quarto</th>
+              <th>Profissional</th>
+              <th>Data de entrada</th>
+              <th>Situação</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Maria Oliveira</td>
+              <td>101 - Enfermaria</td>
+              <td>Dr. Marcos Alves</td>
+              <td>05/10/2025</td>
+              <td><span class="selo selo--ativa">Ativa</span></td>
+              <td class="acoes"><button type="button" aria-label="Ações">...</button></td>
+            </tr>
+            <tr>
+              <td>Carlos Santos</td>
+              <td>203 - Enfermaria</td>
+              <td>Dra. Juliana Rocha</td>
+              <td>09/10/2025</td>
+              <td><span class="selo selo--ativa">Ativa</span></td>
+              <td class="acoes"><button type="button" aria-label="Ações">...</button></td>
+            </tr>
+            <tr>
+              <td>Ana Souza</td>
+              <td>305 - UTI</td>
+              <td>Dr. Rafael Costa</td>
+              <td>08/10/2025</td>
+              <td><span class="selo selo--alta">Alta</span></td>
+              <td class="acoes"><button type="button" aria-label="Ações">...</button></td>
+            </tr>
+            <tr>
+              <td>Pedro Lima</td>
+              <td>102 - Enfermaria</td>
+              <td>Dra. Fernanda Lima</td>
+              <td>20/09/2025</td>
+              <td><span class="selo selo--ativa">Ativa</span></td>
+              <td class="acoes"><button type="button" aria-label="Ações">...</button></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <nav class="paginacao">
+          <a href="#" class="seta">&lt;</a>
+          <a href="#" class="pag ativa">1</a>
+          <a href="#" class="pag">2</a>
+          <a href="#" class="pag">3</a>
+          <a href="#" class="pag">4</a>
+          <a href="#" class="pag">5</a>
+          <a href="#" class="seta">&gt;</a>
+        </nav>
+      </main>
+    </div>
+
+  </div>
+</body>
+</html>
