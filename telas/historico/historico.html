@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Tela de histórico do paciente do Hospital Vida">
+  <title>Histórico do Paciente | Hospital Vida</title>
+  <link rel="stylesheet" href="historico.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar" aria-label="Navegação principal">
+      <div class="brand"><span>+</span> Hospital Vida <span>+</span></div>
+      <nav class="nav-list">
+        <a href="#" class="nav-item" aria-label="Início"><span class="icon">⌂</span><span>Início</span></a>
+        <a href="#" class="nav-item" aria-label="Pacientes"><span class="icon">♙</span><span>Pacientes</span></a>
+        <a href="#" class="nav-item" aria-label="Profissionais"><span class="icon">♙</span><span>Profissionais</span></a>
+        <a href="#" class="nav-item" aria-label="Consultas"><span class="icon">▣</span><span>Consultas</span></a>
+        <a href="#" class="nav-item" aria-label="Internações"><span class="icon">♨</span><span>Internações</span></a>
+        <a href="#" class="nav-item" aria-label="Quartos"><span class="icon">▤</span><span>Quartos</span></a>
+        <a href="#" class="nav-item active" aria-current="page" aria-label="Histórico"><span class="icon">◷</span><span>Histórico</span></a>
+      </nav>
+      <button class="logout nav-item" type="button"><span class="icon">↪</span><span>Sair</span></button>
+    </aside>
+
+    <div class="main-area">
+      <header class="topbar">
+        <button class="menu-button" id="menuButton" type="button" aria-label="Abrir menu" aria-expanded="false">☰</button>
+        <div class="global-search">
+          <span aria-hidden="true">⌕</span>
+          <input id="globalSearch" type="search" placeholder="Buscar..." aria-label="Busca geral">
+        </div>
+        <button class="user-button" type="button" aria-label="Abrir perfil do usuário">
+          <span class="avatar">U</span><span class="user-name">Usuário</span>
+        </button>
+      </header>
+
+      <main class="content">
+        <div class="breadcrumb"><span>Histórico</span><span>/</span><strong>Paciente</strong></div>
+        <div class="page-heading">
+          <div>
+            <p class="eyebrow">Prontuário</p>
+            <h1>Histórico do Paciente</h1>
+          </div>
+          <button class="print-button" id="printButton" type="button">Imprimir histórico</button>
+        </div>
+
+        <section class="patient-selector" aria-labelledby="searchPatientTitle">
+          <label id="searchPatientTitle" for="patientSearch">Localizar paciente</label>
+          <div class="search-row">
+            <div class="input-wrap">
+              <span aria-hidden="true">⌕</span>
+              <input id="patientSearch" type="search" placeholder="Busque por nome ou CPF" autocomplete="off">
+            </div>
+            <select id="patientSelect" aria-label="Selecionar paciente">
+              <option value="joao">João Silva</option>
+              <option value="maria">Maria Oliveira</option>
+              <option value="carlos">Carlos Santos</option>
+            </select>
+          </div>
+        </section>
+
+        <section class="patient-card" aria-labelledby="patientName">
+          <div class="patient-avatar" id="patientInitials" aria-hidden="true">JS</div>
+          <div class="patient-main">
+            <span class="section-label">Paciente</span>
+            <h2 id="patientName">João Silva</h2>
+          </div>
+          <dl class="patient-meta">
+            <div><dt>CPF</dt><dd id="patientCpf">123.456.789-00</dd></div>
+            <div><dt>Data de nascimento</dt><dd id="patientBirth">01/01/1980</dd></div>
+          </dl>
+        </section>
+
+        <section class="history-section" aria-labelledby="consultationsTitle">
+          <div class="section-header">
+            <div><span class="section-icon">▣</span><h2 id="consultationsTitle">Consultas realizadas</h2></div>
+            <span class="count" id="consultationsCount">3 registros</span>
+          </div>
+          <div class="table-wrapper">
+            <table>
+              <thead><tr><th>Data</th><th>Profissional</th><th>Motivo</th><th>Observações</th></tr></thead>
+              <tbody id="consultationsBody"></tbody>
+            </table>
+          </div>
+          <div class="mobile-list" id="consultationsMobile"></div>
+        </section>
+
+        <section class="history-section" aria-labelledby="admissionsTitle">
+          <div class="section-header">
+            <div><span class="section-icon">♨</span><h2 id="admissionsTitle">Internações realizadas</h2></div>
+            <span class="count" id="admissionsCount">1 registro</span>
+          </div>
+          <div class="table-wrapper">
+            <table>
+              <thead><tr><th>Data de entrada</th><th>Data de alta</th><th>Quarto</th><th>Observações</th></tr></thead>
+              <tbody id="admissionsBody"></tbody>
+            </table>
+          </div>
+          <div class="mobile-list" id="admissionsMobile"></div>
+        </section>
+
+        <section class="info-card" aria-labelledby="relevantInfoTitle">
+          <div class="info-icon" aria-hidden="true">i</div>
+          <div>
+            <h2 id="relevantInfoTitle">Informações relevantes</h2>
+            <p>Histórico complementar, alergias e informações registradas durante os atendimentos.</p>
+            <p class="empty-info" id="relevantInfo">Nenhuma informação adicional registrada.</p>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="historico.js"></script>
+</body>
+</html>
