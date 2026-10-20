@@ -9,6 +9,10 @@ Sistema de Gestão Hospitalar desenvolvido a partir de wireframes de alta fideli
 - [Sobre o projeto](#sobre-o-projeto)
 - [Funcionalidades](#funcionalidades)
 - [Telas previstas](#telas-previstas)
+- [Modelagem — Sprint 1](#modelagem--sprint-1)
+  - [Diagrama de classes](#diagrama-de-classes)
+  - [Relacionamentos e multiplicidades](#relacionamentos-e-multiplicidades)
+  - [Cartões CRC](#cartões-crc)
 - [Tecnologias utilizadas](#tecnologias-utilizadas)
 - [Estrutura sugerida](#estrutura-sugerida)
 - [Como executar](#como-executar)
@@ -62,6 +66,135 @@ Com base nos wireframes do projeto, estão previstas as seguintes telas:
 10. **Lista de quartos**
 11. **Histórico do paciente**
 12. **Perfil / Configurações**
+
+## Modelagem — Sprint 1
+
+Na primeira sprint, o domínio do sistema foi modelado com um **diagrama de classes** e com **cartões CRC** (Classe – Responsabilidade – Colaboração). Os arquivos originais estão em [`docs/sprint1/`](docs/sprint1/).
+
+> A evolução deste modelo na Sprint 2 (categorias de profissionais, modalidades de atendimento e novas situações da consulta) está documentada em [`backend/README.md`](backend/README.md) e em [`docs/diagrama-classes-sprint2.pdf`](docs/diagrama-classes-sprint2.pdf).
+
+### Diagrama de classes
+
+![Diagrama de classes da Sprint 1](docs/sprint1/diagrama-classes-sprint1.png)
+
+O modelo tem uma classe abstrata **`Pessoa`**, com os dados comuns (`id`, `nome`, `telefone`, `email`), da qual herdam **`Paciente`** e **`ProfissionalSaude`**. As demais entidades são **`Consulta`**, **`Internacao`**, **`Quarto`** e **`HistoricoMedico`**. As situações são representadas pelas enumerações:
+
+| Enumeração | Valores |
+|---|---|
+| `StatusConsulta` | `AGENDADA`, `CANCELADA`, `CONCLUIDA` |
+| `StatusInternacao` | `ATIVA`, `ENCERRADA`, `CANCELADA` |
+| `SituacaoQuarto` | `DISPONIVEL`, `PARCIALMENTE_OCUPADO`, `LOTADO`, `INDISPONIVEL` |
+
+### Relacionamentos e multiplicidades
+
+| Origem | Relacionamento | Destino | Multiplicidade | Interpretação no modelo Java |
+|---|---|---|---|---|
+| Pessoa | generalização | Paciente | — | `Paciente extends Pessoa` |
+| Pessoa | generalização | ProfissionalSaude | — | `ProfissionalSaude extends Pessoa` |
+| Paciente | associação | Consulta | 1 → 0..* | Paciente mantém `List<Consulta>` |
+| ProfissionalSaude | associação | Consulta | 1 → 0..* | Cada consulta possui um responsável |
+| Paciente | associação | Internacao | 1 → 0..* | Paciente pode possuir várias internações |
+| ProfissionalSaude | associação | Internacao | 1 → 0..* | Cada internação possui um responsável |
+| Quarto | associação | Internacao | 1 → 0..* | Uma internação ativa usa um quarto |
+| Paciente | composição | HistoricoMedico | 1 ◆— 1 | O histórico pertence ao paciente |
+| HistoricoMedico | associação | Consulta | 1 → 0..* | O histórico consolida as consultas |
+| HistoricoMedico | associação | Internacao | 1 → 0..* | O histórico consolida as internações |
+| Quarto | associação | SituacaoQuarto | 1 → 1 | Atributo `situacao` do quarto |
+| Consulta | associação | StatusConsulta | 1 → 1 | Atributo `status` da consulta |
+| Internacao | associação | StatusInternacao | 1 → 1 | Atributo `status` da internação |
+
+### Cartões CRC
+
+Os cartões representam as principais partes do sistema, agrupados pelos casos de uso. O documento completo está em [`docs/sprint1/cartoes-crc-sprint1.pdf`](docs/sprint1/cartoes-crc-sprint1.pdf).
+
+#### Caso de uso: Agendar Consulta
+
+**Consulta**
+
+| Responsabilidades | Colaborações |
+|---|---|
+| Conhecer seu paciente | Paciente |
+| Conhecer seu profissional | Profissional |
+| Conhecer sua data e horário | |
+| Conhecer seu motivo e suas observações | |
+| Conhecer seu status (Confirmada, Pendente ou Cancelada) | |
+| Agendar-se | |
+| Confirmar-se | |
+| Cancelar-se | |
+
+**Paciente**
+
+| Responsabilidades | Colaborações |
+|---|---|
+| Conhecer seu nome | Consulta |
+| Conhecer seu CPF | Internação |
+| Conhecer sua data de nascimento | Histórico do Paciente |
+| Conhecer seu telefone, endereço e e-mail | |
+| Conhecer suas consultas | |
+| Conhecer suas internações | |
+| Conhecer seu histórico | |
+
+**Profissional**
+
+| Responsabilidades | Colaborações |
+|---|---|
+| Conhecer seu nome | Consulta |
+| Conhecer seu registro profissional | Internação |
+| Conhecer sua especialidade | |
+| Conhecer seu telefone e e-mail | |
+| Conhecer suas consultas | |
+| Conhecer as internações pelas quais é responsável | |
+
+#### Caso de uso: Realizar Internação
+
+**Internação**
+
+| Responsabilidades | Colaborações |
+|---|---|
+| Conhecer seu paciente | Paciente |
+| Conhecer seu quarto | Quarto |
+| Conhecer seu profissional responsável | Profissional |
+| Conhecer sua data de entrada e sua data de alta | |
+| Conhecer sua situação (Ativa ou Alta) | |
+| Conhecer suas observações | |
+| Registrar-se | |
+| Dar-se alta | |
+
+**Quarto**
+
+| Responsabilidades | Colaborações |
+|---|---|
+| Conhecer seu número e seu andar | Internação |
+| Conhecer seu tipo (Enfermaria ou UTI) | |
+| Conhecer sua capacidade | |
+| Conhecer sua situação (Ocupado ou Disponível) | |
+| Conhecer suas internações | |
+| Ocupar-se | |
+| Liberar-se | |
+
+#### Caso de uso: Consultar Histórico do Paciente
+
+**Histórico do Paciente**
+
+| Responsabilidades | Colaborações |
+|---|---|
+| Conhecer seu paciente | Paciente |
+| Conhecer as consultas realizadas pelo paciente | Consulta |
+| Conhecer as internações realizadas pelo paciente | Internação |
+| Conhecer as informações relevantes registradas durante os atendimentos | |
+
+#### Caso de uso: Acessar o Sistema
+
+**Usuário**
+
+| Responsabilidades | Colaborações |
+|---|---|
+| Conhecer seu nome | — |
+| Conhecer seu e-mail | |
+| Conhecer sua senha | |
+| Conhecer seu perfil de acesso (Administrador, Recepcionista ou Profissional) | |
+| Autenticar-se no sistema | |
+| Alterar sua senha | |
 
 ## Tecnologias utilizadas
 
