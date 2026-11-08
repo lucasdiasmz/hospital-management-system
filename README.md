@@ -2,7 +2,7 @@
 
 Sistema de Gestão Hospitalar desenvolvido a partir de wireframes de alta fidelidade para centralizar o gerenciamento de pacientes, profissionais, consultas, internações, quartos e históricos clínicos.
 
-> Este repositório contém o frontend do projeto. As telas são organizadas em pastas separadas por funcionalidade e devem ser conectadas por caminhos relativos.
+> Este repositório contém o frontend do projeto (pasta `telas/`) e a API REST em Spring Boot (pasta `backend/`, veja o [README do backend](backend/README.md)).
 
 ## Sumário
 
@@ -228,7 +228,9 @@ Os pacientes e registros presentes no JavaScript são dados de demonstração. E
 
 ## Integração com o backend
 
-O frontend ainda pode ser conectado a uma API para carregar e salvar dados reais.
+A API fica em `backend/` e sobe em `http://localhost:8080` com `mvn spring-boot:run`. Endpoints, regras e
+formato de erros estão no [README do backend](backend/README.md); o diagrama de classes está em
+[`backend/docs/diagrama-classes.md`](backend/docs/diagrama-classes.md).
 
 Exemplo genérico de leitura de um histórico:
 

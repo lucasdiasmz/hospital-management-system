@@ -1,8 +1,16 @@
 # Diagrama de Classes - Sprint 2
 
-Ponto de partida gerado a partir do esqueleto. **Pessoa 1** mantém este diagrama atualizado
-conforme as classes forem implementadas. O GitHub renderiza o bloco Mermaid abaixo
-automaticamente; para exportar como imagem, use https://mermaid.live.
+Mantido pela **Pessoa 1**. O GitHub renderiza o bloco Mermaid automaticamente; para exportar como
+imagem, use https://mermaid.live.
+
+| Parte | Situação |
+|---|---|
+| Pessoa 1 - Paciente | implementado |
+| Pessoa 2 - Profissionais e encaminhamentos | implementado (branch `daniell`) |
+| Pessoa 3 - Consultas e emergências | **previsto**, atualizar quando a branch chegar |
+| Pessoa 4 - Procedimento cirúrgico, internações e quartos | **previsto**, atualizar quando a branch chegar |
+
+## Implementado
 
 ```mermaid
 classDiagram
@@ -25,9 +33,20 @@ classDiagram
         -String registroProfissional
         -String telefone
         -String email
+        -boolean ativo
+        +getCategoria()* CategoriaProfissional
+        +podeRealizarConsultaRotina() boolean
+        +atendeEspecialidade(Especialidade) boolean
+        +podeRealizarCirurgia() boolean
+        +atualizarNome(String) void
+        +atualizarContato(String, String) void
+        +desativar() void
+        +reativar() void
+        +exigirAtivo() void
     }
     class MedicoClinicoGeral {
-        +encaminhar(Paciente, Especialidade, String) ConsultaEspecializada
+        +podeRealizarConsultaRotina() boolean
+        +encaminhar(Paciente, Especialidade, Profissional, String) Encaminhamento
     }
     class MedicoEspecialista {
         -Especialidade especialidade
@@ -35,10 +54,54 @@ classDiagram
     }
     class Cirurgiao {
         -String areaCirurgica
+        -String rqe
+        +podeRealizarCirurgia() boolean
+        +atualizarAtuacaoCirurgica(String, String) void
     }
     Profissional <|-- MedicoClinicoGeral
     Profissional <|-- MedicoEspecialista
     Profissional <|-- Cirurgiao
+
+    class Encaminhamento {
+        -Long id
+        -Especialidade especialidade
+        -String motivo
+        -LocalDateTime dataHora
+    }
+    MedicoClinicoGeral ..> Encaminhamento : cria
+    Encaminhamento "*" --> "1" Paciente
+    Encaminhamento "*" --> "1" MedicoClinicoGeral : clinico
+    Encaminhamento "*" --> "0..1" Profissional : especialistaIndicado
+
+    class CategoriaProfissional {
+        <<enumeration>>
+        CLINICO_GERAL
+        ESPECIALISTA
+        CIRURGIAO
+    }
+    class Especialidade {
+        <<enumeration>>
+        CARDIOLOGIA
+        NEUROLOGIA
+        ORTOPEDIA
+        PEDIATRIA
+        DERMATOLOGIA
+        GINECOLOGIA
+        ONCOLOGIA
+        PSIQUIATRIA
+    }
+```
+
+## Previsto (Pessoas 3 e 4)
+
+Proposta inicial; será substituída pelas classes reais quando as branches forem integradas.
+
+```mermaid
+classDiagram
+    direction TB
+
+    class Paciente
+    class Profissional
 
     class Atendimento {
         <<abstract>>
@@ -68,10 +131,6 @@ classDiagram
     class ProcedimentoCirurgico {
         -String descricaoProcedimento
         -String tipoCirurgia
-        -String observacoesPreOperatorias
-        -String observacoesPosOperatorias
-        -LocalDateTime inicioEfetivo
-        -LocalDateTime fimEfetivo
         -StatusProcedimento status
         +iniciar() void
         +concluir() void
@@ -100,53 +159,10 @@ classDiagram
         -LocalDate dataEntrada
         -LocalDate dataAlta
         -String motivo
-        -String observacoes
         +isAtiva() boolean
         +darAlta(LocalDate) void
     }
     Internacao "*" --> "1" Paciente
     Internacao "*" --> "1" Quarto
     Internacao "*" --> "1" Profissional : responsável
-
-    class SituacaoConsulta {
-        <<enumeration>>
-        AGENDADA
-        CONFIRMADA
-        EM_ATENDIMENTO
-        CONCLUIDA
-        CANCELADA
-        NAO_COMPARECEU
-    }
-    class Prioridade {
-        <<enumeration>>
-        BAIXA
-        MODERADA
-        ALTA
-        CRITICA
-    }
-    class StatusEmergencia {
-        <<enumeration>>
-        AGUARDANDO_AVALIACAO
-        INICIADO
-        CONCLUIDO
-    }
-    class StatusProcedimento {
-        <<enumeration>>
-        AGENDADO
-        EM_ANDAMENTO
-        CONCLUIDO
-        CANCELADO
-    }
-    class Especialidade {
-        <<enumeration>>
-        CARDIOLOGIA
-        NEUROLOGIA
-        ORTOPEDIA
-    }
-    class TipoQuarto {
-        <<enumeration>>
-        ENFERMARIA
-        APARTAMENTO
-        UTI
-    }
 ```

@@ -1,8 +1,6 @@
 # Hospital Vida - API (Sprint 2)
 
-API REST do sistema hospitalar em Spring Boot. Este é o **esqueleto** da Sprint 2: a estrutura,
-as entidades, os endpoints e o tratamento de erros já existem; as regras de negócio estão
-marcadas com `TODO (Pessoa N)` para cada integrante preencher.
+API REST do sistema hospitalar em Spring Boot, pacote `br.pucminas.hospitalvida`.
 
 ## Como executar
 
@@ -14,101 +12,85 @@ mvn spring-boot:run
 ```
 
 A API sobe em `http://localhost:8080`. O banco é H2 em memória (os dados somem ao parar a aplicação);
-o console fica em `http://localhost:8080/h2-console` com JDBC URL `jdbc:h2:mem:hospital`, usuário `sa` e senha vazia.
+o console fica em `http://localhost:8080/h2-console` com JDBC URL `jdbc:h2:mem:hospitalvida`, usuário `sa` e senha vazia.
 
-Para rodar os testes: `mvn test`.
-
-Enquanto um método ainda tiver `TODO`, o endpoint correspondente responde **501 Not Implemented**
-com o nome do método que falta.
+Testes: `mvn test`.
 
 ## Estrutura
 
 ```text
-src/main/java/br/pucminas/hospital/
-├── model/          entidades JPA e regras de domínio
-│   └── enums/      situações, prioridades, especialidades, tipos
-├── dto/            corpos de requisição (records)
+src/main/java/br/pucminas/hospitalvida/
+├── model/          entidades JPA e regras de domínio (enums em model/enums)
+├── dto/            corpos de requisição
 ├── repository/     interfaces Spring Data JPA
 ├── service/        regras de aplicação, chamadas pelos controllers
 ├── controller/     endpoints REST
-└── exception/      exceções de negócio e tratamento global (404, 422, 400, 501)
+└── exception/      exceções de negócio e tratamento global de erros
 docs/diagrama-classes.md   diagrama de classes (Mermaid)
 ```
 
 ## Divisão das tarefas
 
-| Pessoa | Parte | Arquivos |
+| Pessoa | Parte | Situação |
 |---|---|---|
-| 1 | Pacientes, base do projeto, diagrama, integração | `Paciente`, `PacienteRepository`, `PacienteService`, `PacienteController`, `GlobalExceptionHandler`, `docs/diagrama-classes.md` |
-| 2 | Profissionais de saúde | `Profissional`, `MedicoClinicoGeral`, `MedicoEspecialista`, `Cirurgiao`, `Especialidade`, `TipoProfissional`, `ProfissionalRequest`, `ProfissionalRepository`, `ProfissionalService`, `ProfissionalController` |
-| 3 | Consultas e situações | `Consulta`, `ConsultaRotina`, `ConsultaEspecializada`, `AtendimentoEmergencia`, `SituacaoConsulta`, `Prioridade`, `StatusEmergencia`, `AtendimentoRequest`, `AtendimentoRepository`, `AtendimentoService`, `ConsultaController` |
-| 4 | Procedimento cirúrgico, internações e quartos | `ProcedimentoCirurgico`, `StatusProcedimento`, `Quarto`, `TipoQuarto`, `Internacao`, `InternacaoRequest`, `QuartoRepository`, `QuartoService`, `QuartoController`, `InternacaoRepository`, `InternacaoService`, `InternacaoController` |
+| 1 | Base do projeto, tratamento de erros, pacientes, diagrama, integração | pronto |
+| 2 | Profissionais de saúde e encaminhamentos (`docs/pessoa2-profissionais.md`) | integrado |
+| 3 | Consultas, emergências e situações | pendente |
+| 4 | Procedimento cirúrgico, internações e quartos | pendente |
 
-Para achar o que falta em cada parte, procure por `TODO (Pessoa N)` na IDE.
+Uma branch por pessoa, com merge na `main` após revisão de outro integrante.
 
-### Arquivos compartilhados
+## O que a base oferece para as outras partes
 
-- **`Atendimento`** é o contrato entre as Pessoas 3 e 4. Qualquer mudança nele é combinada entre as duas.
-- **`AtendimentoService`**: a Pessoa 3 é dona do arquivo; a Pessoa 4 preenche o caso `PROCEDIMENTO_CIRURGICO`
-  em `agendar`, `iniciar`, `concluir` e `cancelarProcedimento`.
-- **`buscarPorId`** de todos os services já está pronto, para ninguém ficar esperando o CRUD do outro.
+- `exception/RegraNegocioException(String mensagem)` → HTTP **422**.
+- `exception/RecursoNaoEncontradoException(String recurso, Long id)` → HTTP **404**
+  (ex.: `new RecursoNaoEncontradoException("Quarto", id)`).
+- `model/Paciente` (entidade JPA, `id` `Long`) e `repository/PacienteRepository extends JpaRepository<Paciente, Long>`.
+- `service/PacienteService.buscarPorId(id)` devolve o paciente ou lança 404.
 
-## Endpoints
+## Respostas de erro
+
+Todas no formato `{ "status": 422, "mensagem": "...", "momento": "2026-11-08T20:14:39" }`.
+
+| Situação | HTTP |
+|---|---|
+| Campo inválido em `@Valid` (lista os campos na mensagem) | 400 |
+| JSON malformado ou valor em formato errado (data deve ser `aaaa-mm-dd`, enum inexistente) | 400 |
+| Registro não encontrado | 404 |
+| Exclusão de registro vinculado a outros (ex.: paciente com encaminhamento) ou valor único duplicado no banco | 409 |
+| Regra de negócio violada | 422 |
+
+## Pacientes
 
 | Método | Rota | Descrição |
 |---|---|---|
 | GET | `/pacientes` | Lista pacientes |
 | GET | `/pacientes/{id}` | Busca paciente |
-| POST | `/pacientes` | Cadastra paciente |
+| POST | `/pacientes` | Cadastra paciente (201) |
 | PUT | `/pacientes/{id}` | Atualiza paciente |
-| DELETE | `/pacientes/{id}` | Remove paciente |
-| GET | `/profissionais?especialidade=` | Lista profissionais (filtro opcional por especialidade) |
-| GET | `/profissionais/{id}` | Busca profissional |
-| POST | `/profissionais` | Cadastra profissional (campo `tipo` define a categoria) |
-| PUT | `/profissionais/{id}` | Atualiza profissional |
-| DELETE | `/profissionais/{id}` | Remove profissional |
-| GET | `/consultas` | Lista atendimentos de todas as modalidades |
-| GET | `/consultas/{id}` | Busca atendimento |
-| POST | `/consultas` | Agenda atendimento (campo `tipo` define a modalidade) |
-| PATCH | `/consultas/{id}/situacao` | Altera a situação de uma consulta |
-| PATCH | `/consultas/{id}/observacoes` | Registra observações |
-| PATCH | `/consultas/{id}/iniciar` | Inicia emergência ou procedimento cirúrgico |
-| PATCH | `/consultas/{id}/concluir` | Conclui emergência ou procedimento cirúrgico |
-| PATCH | `/consultas/{id}/cancelar` | Cancela procedimento cirúrgico |
-| GET | `/internacoes?ativas=` | Lista internações (filtro opcional das ainda sem alta) |
-| GET | `/internacoes/{id}` | Busca internação |
-| POST | `/internacoes` | Interna paciente |
-| PATCH | `/internacoes/{id}/alta` | Dá alta |
-| GET | `/quartos?tipo=&disponiveis=` | Lista quartos (filtros opcionais) |
-| GET | `/quartos/{id}` | Busca quarto |
-| POST | `/quartos` | Cadastra quarto |
-| PUT | `/quartos/{id}` | Atualiza quarto |
-| DELETE | `/quartos/{id}` | Remove quarto |
+| DELETE | `/pacientes/{id}` | Remove paciente (204) |
 
-### Exemplos de corpo
-
-`POST /profissionais`
 ```json
-{ "tipo": "ESPECIALISTA", "nome": "Dra. Fernanda Lima", "registroProfissional": "CRM-MG 12345",
-  "telefone": "31999990000", "email": "fernanda@hospital.com", "especialidade": "CARDIOLOGIA" }
+POST /pacientes
+{ "nome": "Ana Souza", "cpf": "529.982.247-25", "dataNascimento": "1990-05-10",
+  "telefone": "(31) 99999-0000", "email": "ana@hospitalvida.com", "endereco": "Rua A, 100" }
 ```
 
-`POST /consultas`
-```json
-{ "tipo": "ESPECIALIZADA", "pacienteId": 1, "profissionalId": 2, "data": "2026-11-20",
-  "horario": "14:30", "motivo": "Dor no peito", "especialidade": "CARDIOLOGIA" }
-```
+Regras:
+- Todos os campos são obrigatórios; e-mail com formato válido; data de nascimento no passado.
+- CPF aceito com ou sem máscara, com dígitos verificadores conferidos; é guardado só com números e não pode repetir (422).
+- Paciente com consultas, internações ou encaminhamentos não é apagado, para preservar o histórico (409).
 
-`PATCH /consultas/1/situacao`
-```json
-{ "situacao": "CONFIRMADA" }
-```
+## Profissionais (Pessoa 2)
 
-## Padrões combinados
+Detalhes e exemplos em [`docs/pessoa2-profissionais.md`](../docs/pessoa2-profissionais.md).
 
-- Regra de negócio violada: `throw new RegraNegocioException("mensagem")` → HTTP 422.
-- Registro não encontrado: `throw new RecursoNaoEncontradoException("Paciente", id)` → HTTP 404.
-- Campos inválidos (`@Valid`) → HTTP 400 com a lista de campos.
-- Valores fixos (situação, prioridade, tipo...) sempre como `enum`, nunca texto livre.
-- Uma branch por pessoa (`feat/pacientes`, `feat/profissionais`, `feat/consultas`, `feat/internacoes-quartos`),
-  com merge na `main` após revisão de outro integrante.
+| Método | Rota | Descrição |
+|---|---|---|
+| GET | `/profissionais?categoria=&especialidade=&incluirInativos=` | Lista (por padrão, só ativos) |
+| GET | `/profissionais/{id}` | Busca |
+| POST | `/profissionais` | Cadastra (`categoria` define a subclasse) |
+| PUT | `/profissionais/{id}` | Atualiza nome, contato e atuação cirúrgica |
+| PATCH | `/profissionais/{id}/desativar` · `/reativar` | Tira ou volta para as buscas |
+| POST | `/profissionais/{id}/encaminhamentos` | Clínico `{id}` encaminha um paciente |
+| GET | `/profissionais/{id}/encaminhamentos` | Encaminhamentos feitos pelo clínico |
