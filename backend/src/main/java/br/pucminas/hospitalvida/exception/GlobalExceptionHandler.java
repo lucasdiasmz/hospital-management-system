@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.stream.Collectors;
 
@@ -39,6 +40,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErroResponse> corpoInvalido(HttpMessageNotReadableException e) {
         return resposta(HttpStatus.BAD_REQUEST, "Corpo da requisição inválido ou com valores em formato incorreto");
+    }
+
+    // Valor na URL que não converte (?situacao=INEXISTENTE, /consultas/abc...).
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErroResponse> parametroInvalido(MethodArgumentTypeMismatchException e) {
+        return resposta(HttpStatus.BAD_REQUEST, "Valor inválido para o parâmetro " + e.getName());
     }
 
     // Ex.: apagar um registro que ainda é referenciado por outro (paciente com encaminhamentos, consultas...).
