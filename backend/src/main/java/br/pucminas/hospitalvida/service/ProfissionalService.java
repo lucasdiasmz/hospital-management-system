@@ -2,13 +2,12 @@ package br.pucminas.hospitalvida.service;
 
 import java.util.List;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import br.pucminas.hospitalvida.dto.EncaminhamentoRequest;
 import br.pucminas.hospitalvida.dto.ProfissionalRequest;
+import br.pucminas.hospitalvida.exception.RecursoNaoEncontradoException;
 import br.pucminas.hospitalvida.exception.RegraNegocioException;
 import br.pucminas.hospitalvida.model.Cirurgiao;
 import br.pucminas.hospitalvida.model.Encaminhamento;
@@ -55,7 +54,7 @@ public class ProfissionalService {
     @Transactional(readOnly = true)
     public Profissional buscar(Long id) {
         return repository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profissional com id " + id + " não encontrado."));
+                () -> new RecursoNaoEncontradoException("Profissional", id));
     }
 
     /** Cria a subclasse certa de acordo com a categoria informada. */
@@ -111,8 +110,7 @@ public class ProfissionalService {
                 "Somente médicos clínicos gerais podem encaminhar pacientes.");
         exigir(req.pacienteId() != null, "Informe o pacienteId.");
         Paciente paciente = pacienteRepository.findById(req.pacienteId()).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "Paciente com id " + req.pacienteId() + " não encontrado."));
+                () -> new RecursoNaoEncontradoException("Paciente", req.pacienteId()));
         Profissional especialista = req.especialistaId() == null ? null : buscar(req.especialistaId());
 
         Encaminhamento encaminhamento = ((MedicoClinicoGeral) profissional)
