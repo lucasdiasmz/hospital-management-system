@@ -25,6 +25,7 @@ src/main/java/br/pucminas/hospitalvida/
 ├── repository/     interfaces Spring Data JPA
 ├── service/        regras de aplicação, chamadas pelos controllers
 ├── controller/     endpoints REST
+├── config/         liberação de CORS para as telas
 └── exception/      exceções de negócio e tratamento global de erros
 docs/diagrama-classes.md   diagrama de classes (Mermaid)
 ```
@@ -35,8 +36,8 @@ docs/diagrama-classes.md   diagrama de classes (Mermaid)
 |---|---|---|
 | 1 | Base do projeto, tratamento de erros, pacientes, diagrama, integração | pronto |
 | 2 | Profissionais de saúde e encaminhamentos (`docs/pessoa2-profissionais.md`) | integrado |
-| 3 | Consultas, emergências e situações | pendente |
-| 4 | Procedimento cirúrgico, internações e quartos | pendente |
+| 3 | Consultas, emergências e situações (`docs/pessoa3-consultas.md`) | integrado |
+| 4 | Procedimento cirúrgico, internações e quartos | integrado |
 
 Uma branch por pessoa, com merge na `main` após revisão de outro integrante.
 
@@ -94,3 +95,77 @@ Detalhes e exemplos em [`docs/pessoa2-profissionais.md`](../docs/pessoa2-profiss
 | PATCH | `/profissionais/{id}/desativar` · `/reativar` | Tira ou volta para as buscas |
 | POST | `/profissionais/{id}/encaminhamentos` | Clínico `{id}` encaminha um paciente |
 | GET | `/profissionais/{id}/encaminhamentos` | Encaminhamentos feitos pelo clínico |
+| GET | `/profissionais/{id}/procedimentos` | Procedimentos do cirurgião (data, paciente e descrição) |
+
+## Consultas e emergências (Pessoa 3)
+
+Detalhes e exemplos em [`docs/pessoa3-consultas.md`](../docs/pessoa3-consultas.md).
+
+| Método | Rota | Descrição |
+|---|---|---|
+| GET | `/consultas?situacao=&pacienteId=&profissionalId=` | Lista consultas |
+| GET | `/consultas/{id}` | Busca |
+| POST | `/consultas` | Agenda (`tipo` define a subclasse) |
+| PATCH | `/consultas/{id}/situacao` | Troca a situação |
+| PATCH | `/consultas/{id}/observacoes` | Registra observações |
+| POST | `/consultas/{id}/reagendamento` | Novo agendamento de consulta cancelada ou com falta |
+| GET | `/consultas/emergencias?status=` | Fila de emergência, por prioridade |
+| GET | `/consultas/emergencias/{id}` | Busca |
+| POST | `/consultas/emergencias` | Registra a chegada do paciente |
+| PATCH | `/consultas/emergencias/{id}/iniciar` · `/concluir` | Médico assume o caso · conclui |
+
+## Procedimentos cirúrgicos (Pessoa 4)
+
+| Método | Rota | Descrição |
+|---|---|---|
+| GET | `/consultas/procedimentos?status=&cirurgiaoId=&pacienteId=` | Lista |
+| GET | `/consultas/procedimentos/{id}` | Busca |
+| POST | `/consultas/procedimentos` | Agenda |
+| PATCH | `/consultas/procedimentos/{id}/iniciar` · `/concluir` · `/cancelar` | Muda o status |
+
+```json
+POST /consultas/procedimentos
+{ "data": "2026-12-01", "horario": "08:00", "pacienteId": 1, "cirurgiaoId": 3,
+  "descricao": "Apendicectomia", "tipoCirurgia": "ELETIVA", "observacoesPreOperatorias": "Jejum de 8 horas" }
+```
+
+Regras:
+- `data` e `horario` são os previstos; `inicioEfetivo` e `fimEfetivo` são preenchidos ao iniciar e concluir.
+- `AGENDADO → EM_ANDAMENTO → CONCLUIDO`, ou `AGENDADO → CANCELADO`. Não conclui sem iniciar.
+- O responsável precisa ser um cirurgião ativo. Cirurgias eletivas só podem ser marcadas para o futuro.
+
+## Quartos e internações (Pessoa 4)
+
+| Método | Rota | Descrição |
+|---|---|---|
+| GET | `/quartos?situacao=&tipo=&comVaga=` | Lista |
+| GET | `/quartos/{id}` | Busca |
+| POST | `/quartos` | Cadastra |
+| PATCH | `/quartos/{id}/bloquear` · `/desbloquear` | Tira ou volta para uso |
+| DELETE | `/quartos/{id}` | Remove (só sem internações registradas) |
+| GET | `/internacoes?status=&pacienteId=` | Lista |
+| GET | `/internacoes/{id}` | Busca |
+| POST | `/internacoes` | Interna e ocupa um leito |
+| PATCH | `/internacoes/{id}/alta` | Registra a alta e libera o leito |
+| PATCH | `/internacoes/{id}/transferencia` | Muda de quarto |
+| PATCH | `/internacoes/{id}/cancelar` | Cancela e libera o leito |
+
+```json
+POST /quartos
+{ "numero": "101", "andar": 1, "tipo": "ENFERMARIA", "capacidadeMaxima": 4 }
+
+POST /internacoes
+{ "pacienteId": 1, "profissionalId": 1, "quartoId": 1, "dataPrevistaAlta": "2026-12-05", "observacoes": "Pneumonia leve" }
+```
+
+| Tipo de quarto | Limite de leitos | Justificativa clínica nas observações |
+|---|---|---|
+| `ENFERMARIA` | 6 | não |
+| `APARTAMENTO` | 2 | não |
+| `UTI` | 10 | sim |
+| `ISOLAMENTO` | 1 | sim |
+
+Regras:
+- A situação do quarto acompanha a ocupação; só quarto vazio pode ser bloqueado.
+- O paciente só pode ter uma internação ativa, e quartos lotados ou bloqueados não recebem pacientes.
+- Na transferência, o leito novo é ocupado antes de liberar o antigo.

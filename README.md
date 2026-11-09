@@ -230,7 +230,8 @@ Os pacientes e registros presentes no JavaScript são dados de demonstração. E
 
 A API fica em `backend/` e sobe em `http://localhost:8080` com `mvn spring-boot:run`. Endpoints, regras e
 formato de erros estão no [README do backend](backend/README.md); o diagrama de classes está em
-[`backend/docs/diagrama-classes.md`](backend/docs/diagrama-classes.md).
+[`backend/docs/diagrama-classes.md`](backend/docs/diagrama-classes.md). O diagrama e os cartões CRC da Sprint 1
+estão em [`docs/sprint1/`](docs/sprint1/).
 
 Exemplo genérico de leitura de um histórico:
 

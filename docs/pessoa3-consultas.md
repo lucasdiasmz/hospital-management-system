@@ -17,23 +17,11 @@ Responsável: Matheus · Branch: `feat/consultas`
 
 As modalidades ficam na **mesma tabela** (`@Inheritance(SINGLE_TABLE)`), com a coluna `tipo_atendimento`.
 
-## Para a Pessoa 4: como estender Atendimento
+## Como estender Atendimento
 
-`ProcedimentoCirurgico` precisa de `@Entity`, `@DiscriminatorValue("PROCEDIMENTO")` e destes três métodos:
-
-```java
-@Override public void validarRealizacao() {
-    validarDadosComuns();
-    exigir(getProfissional() != null && getProfissional().podeRealizarCirurgia(),
-            "O responsável pelo procedimento deve ser um cirurgião.");
-    getProfissional().exigirAtivo();
-}
-@Override public String getTipo() { return "PROCEDIMENTO"; }
-@Override protected boolean podeReceberObservacoes() { return true; } // defina a regra do procedimento
-```
-
-Como a tabela é compartilhada, dê nome próprio à coluna de status, pois `status_emergencia` já está em uso:
-`@Column(name = "status_procedimento")`.
+`ProcedimentoCirurgico` (Pessoa 4) é o exemplo: uma nova modalidade precisa de `@Entity`, `@DiscriminatorValue`
+e de `validarRealizacao()`, `getTipo()` e `podeReceberObservacoes()`. Como a tabela é compartilhada, cada
+coluna de status tem nome próprio (`status_emergencia`, `status_procedimento`).
 
 ## Regras implementadas
 

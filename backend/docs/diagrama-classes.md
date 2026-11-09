@@ -1,16 +1,9 @@
 # Diagrama de Classes - Sprint 2
 
-Mantido pela **Pessoa 1**. O GitHub renderiza o bloco Mermaid automaticamente; para exportar como
-imagem, use https://mermaid.live.
+O GitHub renderiza os blocos Mermaid automaticamente; para exportar como imagem, use https://mermaid.live.
+O modelo da Sprint 1 está em [`docs/sprint1/`](../../docs/sprint1/).
 
-| Parte | Situação |
-|---|---|
-| Pessoa 1 - Paciente | implementado |
-| Pessoa 2 - Profissionais e encaminhamentos | implementado (branch `daniell`) |
-| Pessoa 3 - Consultas e emergências | **previsto**, atualizar quando a branch chegar |
-| Pessoa 4 - Procedimento cirúrgico, internações e quartos | **previsto**, atualizar quando a branch chegar |
-
-## Implementado
+## Pessoas e profissionais
 
 ```mermaid
 classDiagram
@@ -90,11 +83,11 @@ classDiagram
         ONCOLOGIA
         PSIQUIATRIA
     }
+    Profissional ..> CategoriaProfissional
+    MedicoEspecialista --> Especialidade
 ```
 
-## Previsto (Pessoas 3 e 4)
-
-Proposta inicial; será substituída pelas classes reais quando as branches forem integradas.
+## Modalidades de atendimento
 
 ```mermaid
 classDiagram
@@ -102,6 +95,7 @@ classDiagram
 
     class Paciente
     class Profissional
+    class Encaminhamento
 
     class Atendimento {
         <<abstract>>
@@ -110,30 +104,46 @@ classDiagram
         -LocalTime horario
         -String observacoes
         +validarRealizacao()* void
+        +getTipo()* String
+        #podeReceberObservacoes()* boolean
         +registrarObservacoes(String) void
     }
     class Consulta {
         <<abstract>>
         -String motivo
         -SituacaoConsulta situacao
+        #criarCopia(LocalDate, LocalTime)* Consulta
+        +validarAgendamento() void
         +alterarSituacao(SituacaoConsulta) void
+        +reagendar(LocalDate, LocalTime) Consulta
     }
-    class ConsultaRotina
+    class ConsultaRotina {
+        +validarRealizacao() void
+    }
     class ConsultaEspecializada {
         -Especialidade especialidade
+        +validarRealizacao() void
     }
     class AtendimentoEmergencia {
         -Prioridade prioridade
         -StatusEmergencia status
-        +iniciar() void
-        +concluir() void
+        -String queixaPrincipal
+        +validarRealizacao() void
+        +iniciar(Profissional) void
+        +concluir(String) void
     }
     class ProcedimentoCirurgico {
-        -String descricaoProcedimento
-        -String tipoCirurgia
+        -String descricao
+        -TipoCirurgia tipoCirurgia
+        -String observacoesPreOperatorias
+        -String observacoesPosOperatorias
+        -LocalDateTime inicioEfetivo
+        -LocalDateTime fimEfetivo
         -StatusProcedimento status
+        +validarRealizacao() void
+        +validarAgendamento() void
         +iniciar() void
-        +concluir() void
+        +concluir(String) void
         +cancelar() void
     }
     Atendimento <|-- Consulta
@@ -142,27 +152,118 @@ classDiagram
     Atendimento <|-- AtendimentoEmergencia
     Atendimento <|-- ProcedimentoCirurgico
     Atendimento "*" --> "1" Paciente
-    Atendimento "*" --> "0..1" Profissional
+    Atendimento "*" --> "0..1" Profissional : responsavel
+    Consulta "0..1" --> "0..1" Consulta : consultaOriginal
+    ConsultaEspecializada "*" --> "0..1" Encaminhamento
+
+    class SituacaoConsulta {
+        <<enumeration>>
+        AGENDADA
+        CONFIRMADA
+        EM_ATENDIMENTO
+        CONCLUIDA
+        CANCELADA
+        NAO_COMPARECEU
+        +podeMudarPara(SituacaoConsulta) boolean
+    }
+    class Prioridade {
+        <<enumeration>>
+        BAIXA
+        MODERADA
+        ALTA
+        CRITICA
+    }
+    class StatusEmergencia {
+        <<enumeration>>
+        AGUARDANDO
+        INICIADO
+        CONCLUIDO
+        +podeMudarPara(StatusEmergencia) boolean
+    }
+    class TipoCirurgia {
+        <<enumeration>>
+        ELETIVA
+        URGENCIA
+        EMERGENCIA
+    }
+    class StatusProcedimento {
+        <<enumeration>>
+        AGENDADO
+        EM_ANDAMENTO
+        CONCLUIDO
+        CANCELADO
+        +podeMudarPara(StatusProcedimento) boolean
+    }
+    Consulta --> SituacaoConsulta
+    AtendimentoEmergencia --> Prioridade
+    AtendimentoEmergencia --> StatusEmergencia
+    ProcedimentoCirurgico --> TipoCirurgia
+    ProcedimentoCirurgico --> StatusProcedimento
+```
+
+## Internações e quartos
+
+```mermaid
+classDiagram
+    direction TB
+
+    class Paciente
+    class Profissional
 
     class Quarto {
         -Long id
         -String numero
+        -int andar
+        -int capacidadeMaxima
+        -int ocupacaoAtual
         -TipoQuarto tipo
-        -int capacidade
-        -int leitosOcupados
-        +temLeitoDisponivel() boolean
-        +ocuparLeito() void
-        +liberarLeito() void
+        -SituacaoQuarto situacao
+        +possuiVaga() boolean
+        +ocupar() void
+        +liberar() void
+        +bloquear() void
+        +desbloquear() void
     }
     class Internacao {
         -Long id
-        -LocalDate dataEntrada
-        -LocalDate dataAlta
-        -String motivo
-        +isAtiva() boolean
-        +darAlta(LocalDate) void
+        -LocalDateTime dataEntrada
+        -LocalDate dataPrevistaAlta
+        -LocalDate dataEfetivaAlta
+        -String observacoes
+        -StatusInternacao status
+        +iniciar() void
+        +registrarAlta(LocalDate) void
+        +cancelar() void
+        +transferir(Quarto) void
+        +estaAtiva() boolean
     }
     Internacao "*" --> "1" Paciente
+    Internacao "*" --> "1" Profissional : responsavel
     Internacao "*" --> "1" Quarto
-    Internacao "*" --> "1" Profissional : responsável
+
+    class TipoQuarto {
+        <<enumeration>>
+        ENFERMARIA
+        APARTAMENTO
+        UTI
+        ISOLAMENTO
+        -int limiteLeitos
+        -boolean exigeJustificativa
+    }
+    class SituacaoQuarto {
+        <<enumeration>>
+        DISPONIVEL
+        PARCIALMENTE_OCUPADO
+        LOTADO
+        INDISPONIVEL
+    }
+    class StatusInternacao {
+        <<enumeration>>
+        ATIVA
+        ENCERRADA
+        CANCELADA
+    }
+    Quarto --> TipoQuarto
+    Quarto --> SituacaoQuarto
+    Internacao --> StatusInternacao
 ```

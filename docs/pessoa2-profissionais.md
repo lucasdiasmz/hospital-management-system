@@ -57,6 +57,7 @@ Para buscar um profissional pelo id: `profissionalService.buscar(id)` (devolve 4
 | PATCH | `/profissionais/{id}/desativar` · `/reativar` | tira ou volta para as buscas |
 | POST | `/profissionais/{id}/encaminhamentos` | clínico `{id}` encaminha um paciente |
 | GET | `/profissionais/{id}/encaminhamentos` | encaminhamentos feitos pelo clínico |
+| GET | `/profissionais/{id}/procedimentos` | procedimentos do cirurgião (data, paciente e descrição) |
 
 ```json
 POST /profissionais
