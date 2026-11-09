@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import br.pucminas.hospitalvida.dto.EncaminhamentoRequest;
 import br.pucminas.hospitalvida.dto.ProfissionalRequest;
 import br.pucminas.hospitalvida.model.Encaminhamento;
+import br.pucminas.hospitalvida.model.ProcedimentoCirurgico;
 import br.pucminas.hospitalvida.model.Profissional;
 import br.pucminas.hospitalvida.model.enums.CategoriaProfissional;
 import br.pucminas.hospitalvida.model.enums.Especialidade;
@@ -77,5 +78,10 @@ public class ProfissionalController {
     @GetMapping("/{id}/encaminhamentos")
     public List<Encaminhamento> encaminhamentos(@PathVariable("id") Long id) {
         return service.encaminhamentosDoClinico(id);
+    }
+
+    @GetMapping("/{id}/procedimentos")
+    public List<ProcedimentoCirurgico> procedimentos(@PathVariable("id") Long id) {
+        return service.procedimentosDoCirurgiao(id);
     }
 }

@@ -14,11 +14,13 @@ import br.pucminas.hospitalvida.model.Encaminhamento;
 import br.pucminas.hospitalvida.model.MedicoClinicoGeral;
 import br.pucminas.hospitalvida.model.MedicoEspecialista;
 import br.pucminas.hospitalvida.model.Paciente;
+import br.pucminas.hospitalvida.model.ProcedimentoCirurgico;
 import br.pucminas.hospitalvida.model.Profissional;
 import br.pucminas.hospitalvida.model.enums.CategoriaProfissional;
 import br.pucminas.hospitalvida.model.enums.Especialidade;
 import br.pucminas.hospitalvida.repository.EncaminhamentoRepository;
 import br.pucminas.hospitalvida.repository.PacienteRepository;
+import br.pucminas.hospitalvida.repository.ProcedimentoRepository;
 import br.pucminas.hospitalvida.repository.ProfissionalRepository;
 
 @Service
@@ -28,12 +30,14 @@ public class ProfissionalService {
     private final ProfissionalRepository repository;
     private final EncaminhamentoRepository encaminhamentoRepository;
     private final PacienteRepository pacienteRepository;
+    private final ProcedimentoRepository procedimentoRepository;
 
     public ProfissionalService(ProfissionalRepository repository, EncaminhamentoRepository encaminhamentoRepository,
-                               PacienteRepository pacienteRepository) {
+                               PacienteRepository pacienteRepository, ProcedimentoRepository procedimentoRepository) {
         this.repository = repository;
         this.encaminhamentoRepository = encaminhamentoRepository;
         this.pacienteRepository = pacienteRepository;
+        this.procedimentoRepository = procedimentoRepository;
     }
 
     /**
@@ -122,6 +126,14 @@ public class ProfissionalService {
     public List<Encaminhamento> encaminhamentosDoClinico(Long clinicoId) {
         buscar(clinicoId);
         return encaminhamentoRepository.findByClinico_Id(clinicoId);
+    }
+
+    /** Procedimentos do cirurgião, com data, paciente e descrição. */
+    @Transactional(readOnly = true)
+    public List<ProcedimentoCirurgico> procedimentosDoCirurgiao(Long cirurgiaoId) {
+        Profissional profissional = buscar(cirurgiaoId);
+        exigir(profissional.podeRealizarCirurgia(), "O profissional " + profissional.getNome() + " não é cirurgião.");
+        return procedimentoRepository.findByProfissional_Id(cirurgiaoId);
     }
 
     private static void exigir(boolean condicao, String mensagem) {
