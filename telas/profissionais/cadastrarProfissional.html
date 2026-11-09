@@ -26,13 +26,13 @@
     <aside class="sidebar">
       <div class="logo"><svg class="ic"><use href="#i-plus"/></svg> Hospital Vida +</div>
       <ul class="nav">
-        <li><a href="../../inicio/dashboard.html"><svg class="ic"><use href="#i-home"/></svg> Início</a></li>
-        <li><a href="../../pacientes/pacientes.html"><svg class="ic"><use href="#i-user"/></svg> Pacientes</a></li>
-        <li><a href="../../profissionais/profissionais.html" class="ativo"><svg class="ic"><use href="#i-brief"/></svg> Profissionais</a></li>
-        <li><a href="#"><svg class="ic"><use href="#i-cal"/></svg> Consultas</a></li>
-        <li><a href="#"><svg class="ic"><use href="#i-bed"/></svg> Internações</a></li>
-        <li><a href="../../quartos/quartos.html"><svg class="ic"><use href="#i-bed"/></svg> Quartos</a></li>
-        <li><a href="#"><svg class="ic"><use href="#i-clock"/></svg> Histórico</a></li>
+        <li><a href="../inicio/dashboard.html"><svg class="ic"><use href="#i-home"/></svg> Início</a></li>
+        <li><a href="../pacientes/pacientes.html"><svg class="ic"><use href="#i-user"/></svg> Pacientes</a></li>
+        <li><a href="../profissionais/profissional.html" class="ativo"><svg class="ic"><use href="#i-brief"/></svg> Profissionais</a></li>
+        <li><a href="../consultas/consultas.html"><svg class="ic"><use href="#i-cal"/></svg> Consultas</a></li>
+        <li><a href="../internacoes/internacao.html"><svg class="ic"><use href="#i-bed"/></svg> Internações</a></li>
+        <li><a href="../quartos/quarto.html"><svg class="ic"><use href="#i-bed"/></svg> Quartos</a></li>
+        <li><a href="../historico/historico.html"><svg class="ic"><use href="#i-clock"/></svg> Histórico</a></li>
       </ul>
     </aside>
 
@@ -68,6 +68,7 @@
             <select id="especialidade" name="especialidade" required>
               <option value="" selected disabled hidden>Selecione a especialidade</option>
               <option>Clínico Geral</option>
+              <option>Cirurgião</option>
               <option>Cardiologia</option>
               <option>Ortopedia</option>
               <option>Pediatria</option>
@@ -85,7 +86,7 @@
           </div>
 
           <div class="botoes">
-            <a href="../profissionais.html" class="btn btn--cancelar">Cancelar</a>
+            <a href="profissional.html" class="btn btn--cancelar">Cancelar</a>
             <button type="submit" class="btn btn--salvar">Salvar</button>
           </div>
         </form>
