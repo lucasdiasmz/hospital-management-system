@@ -1,0 +1,1 @@
+package br.pucminas.hospitalvida.dto; public record ProcedimentoCirurgicoRequest() {}

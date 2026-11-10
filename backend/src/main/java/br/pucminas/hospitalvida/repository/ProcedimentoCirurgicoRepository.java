@@ -1,0 +1,2 @@
+package br.pucminas.hospitalvida.repository;
+import br.pucminas.hospitalvida.model.ProcedimentoCirurgico; import org.springframework.data.jpa.repository.JpaRepository; public interface ProcedimentoCirurgicoRepository extends JpaRepository<ProcedimentoCirurgico,Long>{}
